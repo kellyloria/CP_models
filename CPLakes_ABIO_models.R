@@ -12,8 +12,7 @@ library(MuMIn) # forr squared
 library(PerformanceAnalytics) 
 library(nlme)
 
-setwd("~/Documents/Zoop data for papers")
-getwd()
+
 d <- read.csv("2016_Comp_Lakes_water_chem.csv", header=T)
 names(d)
 w <- read.csv("COMPLAKES_2016data_a.csv", header=T)

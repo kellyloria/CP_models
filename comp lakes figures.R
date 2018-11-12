@@ -12,7 +12,6 @@ library(TTR)
 library(gridExtra)
 library(Rmisc)
 
-setwd("~/Documents/Zoop data for papers")
 
 # read in data file 
 d <- read.csv("comp_lakes_master_data_2.csv", header=T)

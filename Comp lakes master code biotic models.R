@@ -9,7 +9,6 @@ library(lmerTest)# for p-value
 library(MuMIn) # forr squared
 library(PerformanceAnalytics) # correlation analysis 
 
-setwd("~/Documents/Zoop data for papers")
 
 # read in data file 
 d <- read.csv("comp_lakes_master_data_2.csv", header=T)
