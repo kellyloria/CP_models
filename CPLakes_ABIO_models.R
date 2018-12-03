@@ -23,18 +23,49 @@ names(cp)
 # Subset df d for sur and hypo samples only (GLV lakes have meta too)
 #surface measurements:
 head(d)
+
 d2 <- subset(d, sample_depth=="sur" | sample_depth=="hypo",
-             select= Site:Fish)
+             select= Site:phyto_den)
 summary(d2$sample_depth)
+
+summary(d2$Site)
+d3 <- subset(d2, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" 
+             | Site=="Blue Lake" | Site=="Isabelle Lake" | Site=="Snowbank Lake" 
+             | Site=="Diamond Lake" | Site=="Mud Lake" | Site=="Jasper Lake" 
+             | Site=="Upper Diamond Lake"| Site=="Forest Lake"| Site=="Lion Lake 2"
+             | Site=="Pear Reservoir" | Site=="Yankee Doodle" | Site=="GL1" 
+             | Site=="Long Lake" | Site=="Red Deer Lake" | Site=="GL1", 
+             select= Site:phyto_den)
+summary(d3$Site)
 
 head(w)
 w2 <- subset(w, sample_depth=="sur" | sample_depth=="hypo",
              select= Date:Elevation)
 summary(w2$sample_depth)
-
+w2$Site
 w3 <- subset(w, sample_depth=="sur",
              select= Date:Elevation)
 summary(w3$sample_depth)
+
+w4 <- subset(w2, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" 
+             | Site=="Blue Lake" | Site=="Isabelle Lake" | Site=="Snowbank Lake" 
+             | Site=="Diamond Lake" | Site=="Mud Lake" | Site=="Jasper Lake" 
+             | Site=="Upper Diamond Lake"| Site=="Forest Lake"| Site=="Lion Lake 2"
+             | Site=="Pear Reservoir" | Site=="Yankee Doodle" | Site=="GL1" 
+             | Site=="Long Lake" | Site=="Red Deer Lake" | Site=="GL1", 
+             select= Date:Elevation)
+summary(w4$Site)
+
+
+names(cp)
+cp2 <- subset(cp, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" 
+             | Site=="Blue Lake" | Site=="Isabelle Lake" | Site=="Snowbank Lake" 
+             | Site=="Diamond Lake" | Site=="Mud Lake" | Site=="Jasper Lake" 
+             | Site=="Upper Diamond Lake"| Site=="Forest Lake"| Site=="Lion Lake 2"
+             | Site=="Pear Reservoir" | Site=="Yankee Doodle" | Site=="GL1" 
+             | Site=="Long Lake" | Site=="Red Deer Lake" | Site=="GL1", 
+             select= Site:Sort)
+summary(cp2$Site)
 
 ## Physical variables for lake "morphology" and elevation
 #     - Size: surface area and max depth 
@@ -47,12 +78,13 @@ sur_area.mod <- lmer(log10(Sur_Area_m2) ~ scale(Elevation) + (1 | Site), data = 
 summary(sur_area.mod) # no pattern
 hist(residuals(sur_area.mod))
 plot(cp$Elevation, log10(cp$Sur_Area_m2))
-
+# no 
 
 depth.mod <- lmer(log10(Max_Depth) ~ scale(Elevation) + (1 | Site), data = cp)
 summary(depth.mod) # no pattern 
 hist(residuals(depth.mod))
 plot(cp$Elevation, log10(cp$Max_Depth))
+# no
 
 # Are max depth and surface area correlated to each other?
 my_cor <- cp[, c(7, 9)]
@@ -227,6 +259,8 @@ AIC(TDP.A.mod1, TDP.B.mod1, TDP.C.mod1, TDP.D.mod1)
 #######
 hist((d2$NO3_mg_L))
 hist(log10(d2$NO3_mg_L +1)) # not better
+hist(asin(sqrt(d2$NO3_mg_L)))
+
 
 # Model A:
 #   A. lmer(y ~ time + elevation + SA + depth + sample depth + (1|site))
@@ -458,6 +492,53 @@ r.squaredGLMM(CHLA.D.mod1)
 
 AIC(CHLA.A.mod1, CHLA.B.mod1, CHLA.C.mod1, CHLA.D.mod1)
 
+#################
+# PHYTO DENSITY #
+#################
+hist((d2$phyto_den))
+hist(log10(d2$phyto_den)) # better
+# Model A:
+#   A. lmer(y ~ time + elevation + SA + depth + sample depth + (1|site))
+PHYTD.A.mod1 <- lmer(log10(phyto_den) ~ scale(Elevation) + Fish + scale(log10(SA_m2)) 
+                    + scale(log10(max_depth)) + sample_depth +  sample_num
+                    + (1 | Site), data = d2)
+summary(PHYTD.A.mod1)
+hist(residuals(PHYTD.A.mod1))
+r.squaredGLMM(PHYTD.A.mod1)
+
+# Model B:
+#   B. lmer(y ~ time + elevation + SA + depth + (1|site))
+PHYTD.B.mod1 <- lmer(log10(phyto_den)  ~ scale(Elevation) + Fish + scale(log10(SA_m2)) 
+                    + scale(log10(max_depth)) + sample_num
+                    + (1 | Site), data = d2)
+summary(PHYTD.B.mod1)
+hist(residuals(PHYTD.B.mod1))
+r.squaredGLMM(PHYTD.B.mod1)
+
+# Model C:
+#   C. lmer(y ~ time + elevation + SA + depth + (1|site) + (1|watershed))
+PHYTD.C.mod1 <- lmer(log10(phyto_den) ~ scale(Elevation) + Fish + scale(log10(SA_m2)) 
+                    + scale(log10(max_depth)) + sample_depth +  sample_num
+                    + (1 | Site) + (1| watershed), data = d2)
+
+summary(PHYTD.C.mod1)
+hist(residuals(PHYTD.C.mod1))
+r.squaredGLMM(PHYTD.C.mod1)
+
+# Model D:
+#   D. lmer(y ~ time + elevation + SA + depth + sample depth + (1|site) + (1|watershed))
+PHYTD.D.mod1 <- lmer(log10(phyto_den) ~ scale(Elevation) + Fish + scale(log10(SA_m2)) 
+                    + scale(log10(max_depth)) + sample_num
+                    + (1 | Site) + (1| watershed), data = d2)
+
+summary(PHYTD.D.mod1)
+hist(residuals(PHYTD.D.mod1))
+r.squaredGLMM(PHYTD.D.mod1)
+
+AIC(PHYTD.A.mod1, PHYTD.B.mod1, PHYTD.C.mod1, PHYTD.D.mod1)
+
+
+
 
 
 
@@ -634,6 +715,8 @@ summary(RHO.B.mod1)
 hist(residuals(RHO.B.mod1)) # not that normal
 r.squaredGLMM(RHO.B.mod1)
 
+plot(RHO.B.mod1)
+
 
 # Model D:
 #   D. lmer(y ~ time + elevation + SA + depth + sample depth + (1|site) + (1|watershed))
@@ -647,13 +730,56 @@ r.squaredGLMM(RHO.D.mod1)
 
 AIC(RHO.B.mod1, RHO.D.mod1)
 
+
 ##################################################
 ##################################################
 # ABIOTIC FACTORS : doc, TDN, TDP, NO3, PO4, FI, SUVA, Temp, chlor-a, conductivity, 
-# secchi, light at surface, rho change
+#    secchi, light at surface, rho change
+
+##################################################
+# What relevant factors of abiotic qualities of lakes are related to ##################################################
+##################################################
+# ABIOTIC FACTORS : doc, TDN, TDP, NO3, PO4, FI, SUVA, Temp, chlor-a, conductivity, 
+#    secchi, light at surface, rho change
 
 ##################################################
 # What relevant factors of abiotic qualities of lakes are related to elevation?: 
+#    1. doc.D.mod1 (positive trend for fish)
+#    2. TDN.B.mod1 (only a trend)
+#    3. NO3.D.mod1 (only a trend, sig. for sample number)
+#    4. PO4.A.mod1 (trend of sample location, sig. for fish, and sample number)
+#    5. FI.B.mod1 (trend of elevation, sig. for surface area, max depth and sample number)
+#    6. TEMP.A.mod1 (sig. for sample depth and sample number)
+#    7. COND.B.mod1 (sig. for sample number)
+#    8. PAR_AT.B.mod1 
+#    9. RHO.B.mod1 (sig. for surface area, max depth and sample number)
+
+# Other sig drivers not related to ##################################################
+##################################################
+# ABIOTIC FACTORS : doc, TDN, TDP, NO3, PO4, FI, SUVA, Temp, chlor-a, conductivity, 
+#    secchi, light at surface, rho change
+
+##################################################
+# What relevant factors of abiotic qualities of lakes are related to elevation?: 
+#    1. doc.D.mod1 (positive trend for fish)
+#    2. TDN.B.mod1 (only a trend)
+#    3. NO3.D.mod1 (only a trend, sig. for sample number)
+#    4. PO4.A.mod1 (trend of sample location, sig. for fish, and sample number)
+#    5. FI.B.mod1 (trend of elevation, sig. for surface area, max depth and sample number)
+#    6. TEMP.A.mod1 (sig. for sample depth and sample number)
+#    7. COND.B.mod1 (sig. for sample number)
+#    8. PAR_AT.B.mod1 
+#    9. RHO.B.mod1 (sig. for surface area, max depth and sample number)
+
+# Other sig drivers not related to elevation?
+#    1. SUVA.B.mod1 (trend of fish, sig. for sample number)
+#    2. SECCHI.B.mod1 (sig for max depth)
+
+?
+#    1. SUVA.B.mod1 (trend of fish, sig. for sample number)
+#    2. SECCHI.B.mod1 (sig for max depth)
+
+
 #    1. doc.D.mod1 (positive trend for fish)
 #    2. TDN.B.mod1 (only a trend)
 #    3. NO3.D.mod1 (only a trend, sig. for sample number)
@@ -668,3 +794,183 @@ AIC(RHO.B.mod1, RHO.D.mod1)
 #    1. SUVA.B.mod1 (trend of fish, sig. for sample number)
 #    2. SECCHI.B.mod1 (sig for max depth)
 
+
+
+table(d$sample_num)
+
+hist(d$sample_num)
+d3$FI
+
+## plot pannel of lakes by visit number and by depth
+# ABIOTIC FACTORS : doc, TDN, TDP, NO3, PO4, FI, SUVA, Temp, chlor-a, conductivity, 
+#    secchi, light at surface, rho change
+ggplot(data = d3, # data
+         aes(x = sample_num, # aesthetics
+             y = TDN_mg_L,
+             color = sample_depth)) +
+  geom_line() +  geom_point() + labs(y = "TDN", x = "Sample number", colour = "Depth") + 
+  facet_grid(~Site) 
+
+ggsave("TDN_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+  
+ggplot(data = d3, # data
+       aes(x = sample_num, # aesthetics
+           y = TDP_mg_L,
+           color = sample_depth)) +
+  geom_line() +  geom_point() + labs(y = "TDP", x = "Sample number", colour = "Depth") + 
+  facet_grid(~Site) 
+
+ggsave("TDP_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+  
+  
+ggplot(data = d3, # data
+       aes(x = sample_num, # aesthetics
+           y = NO3_mg_L,
+           color = sample_depth)) +
+  geom_line() +  geom_point() + labs(y = "NO3", x = "Sample number", colour = "Depth") + 
+  facet_grid(~Site) 
+
+ggsave("NO3_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+
+ggplot(data = d3, # data
+       aes(x = sample_num, # aesthetics
+           y = FI,
+           color = sample_depth)) +
+  geom_line() +  geom_point() + labs(y = "FI", x = "Sample number", colour = "Depth") + 
+  facet_grid(~Site) 
+
+ggsave("FI_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+d3$SUVA
+ggplot(data = d3, # data
+       aes(x = sample_num, # aesthetics
+           y = SUVA,
+           color = sample_depth)) +
+  geom_line() +  geom_point() + labs(y = "SUVA", x = "Sample number", colour = "Depth") + 
+  facet_grid(~Site) 
+
+ggsave("SUVA_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+d3$DOC_mg_L
+ggplot(data = d3, # data
+       aes(x = sample_num, # aesthetics
+           y = DOC_mg_L,
+           color = sample_depth)) +
+  geom_line() +  geom_point() + labs(y = "DOC", x = "Sample number", colour = "Depth") + 
+  facet_grid(~Site) 
+
+ggsave("DOC_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+
+d3$chla
+ggplot(data = d3, # data
+       aes(x = sample_num, # aesthetics
+           y = chla,
+           color = sample_depth)) +
+  geom_line() +  geom_point() + labs(y = "chla", x = "Sample number", colour = "Depth") + 
+  facet_grid(~Site) 
+
+ggsave("chla_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+
+
+w4$Temp
+ggplot(data = w4, # data
+       aes(x = sample_num, # aesthetics
+           y = Temp,
+           color = sample_depth)) +
+  geom_line() +  geom_point() + labs(y = "Water Temp", x = "Sample number", colour = "Depth") + 
+  facet_grid(~Site) 
+
+ggsave("Temp_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+w4$Conductivity
+ggplot(data = w4, # data
+       aes(x = sample_num, # aesthetics
+           y = Conductivity,
+           color = sample_depth)) +
+  geom_line() +  geom_point() + labs(y = "Conductivity", x = "Sample number", colour = "Depth") + 
+  facet_grid(~Site) 
+
+ggsave("CONDC_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+w4$Light.at.surface
+cp$Secchi
+ggplot(data = cp2, # data
+       aes(x = sample_num, # aesthetics
+           y = Secchi)) +
+  geom_line() +  geom_point() + labs(y = "Secchi", x = "Sample number") + 
+  facet_grid(~Site) 
+
+ggsave("Secchi_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+
+
+cp$rho_change.hypo_sur.
+ggplot(data = cp2, # data
+       aes(x = sample_num, # aesthetics
+           y = rho_change.hypo_sur.)) +
+  geom_line() +  geom_point() + labs(y = "Stability", x = "Sample number") + 
+  facet_grid(~Site) 
+
+ggsave("Stability_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+
+ggplot(data = cp2, # data
+       aes(x = sample_num, # aesthetics
+           y = rho_change.hypo_sur.)) +
+  geom_line() +  geom_point() + labs(y = "Stability", x = "Sample number") + 
+  facet_grid(~Site) 
+
+ggsave("Stability_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+
+cp2$attentuation
+ggplot(data = cp2, # data
+       aes(x = sample_num, # aesthetics
+           y = attentuation)) +
+  geom_line() +  geom_point() + labs(y = "PAR attenuation", x = "Sample number") + 
+  facet_grid(~Site) 
+
+ggsave("atten_time.pdf",
+       scale = 2, width = 24, height = 5, units = c("cm"), dpi = 300) 
+
+
+
+
+
+
+
+
+
+ggplot(data = d3, # data
+       aes(x = sample_num, # aesthetics
+           y = chla,
+           color = sample_depth)) +
+  geom_line() +  geom_point() + # geom 
+  facet_grid(~Site) 
+
+
+
+
+ggplot(data = d3, # data
+       aes(x = sample_num, # aesthetics
+           y = chla,
+           color = sample_depth)) +
+  geom_point() + # geom 
+  facet_grid(~Site) + # scale
+  stat_smooth(method = "lm", se = TRUE)
