@@ -91,6 +91,7 @@ TOTALR.mod1 <- glmer(total_rich ~ scale(SA_m2) + scale(max_depth) + scale(Elevat
 
 summary(TOTALR.mod1)
 hist(residuals(TOTALR.mod1))
+# cut total and phyto ricness-- phytoplankton 
 
 
 #################
@@ -114,13 +115,22 @@ summary(PHYTD.mod1)
 hist(residuals(PHYTD.mod1))
 
 
+
+PHYTD.mod1 <- lmer(log10(phyto_den) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                     epi + (1|sample_num) + (1|Site), data = d2)
+
+summary(PHYTD.mod1)
+hist(residuals(PHYTD.mod1))
+
 ################
 # Zoop Density #
 ################
 hist(cp$zoop_den) # not normal
 hist(log10(cp$zoop_den +1)) # more normal 
+hist(cp$zoop_den2)
+hist(log10(cp$zoop_den2 +1))
 
-ZOOD.i.mod1 <- lmer(log10(zoop_den +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + Fish + 
+ZOOD.i.mod1 <- lmer(log10(zoop_den2 +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + Fish + 
                          scale(Elevation)*Fish + scale(Elevation)*scale(max_depth) + (1|sample_num) + 
                          (1|Site), data = cp)
 
@@ -128,12 +138,19 @@ summary(ZOOD.i.mod1)
 hist(residuals(ZOOD.i.mod1))
 #no sig interactions
 
-ZOOD.mod1 <- lmer(log10(zoop_den +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + Fish +
+ZOOD.mod1 <- lmer(log10(zoop_den2 +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + Fish +
                     (1|sample_num) + (1|Site), data = cp)
 
 summary(ZOOD.mod1)
 hist(residuals(ZOOD.mod1))
 vif(ZOOD.mod1)
+
+
+ZOOD.mod1 <- lmer(log10(zoop_den +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
+                    (1|sample_num) + (1|Site), data = cp)
+
+summary(ZOOD.mod1)
+hist(residuals(ZOOD.mod1))
 
 
 #####################################
@@ -146,6 +163,21 @@ hist(log10(d2$phyto_BV)) # better
 PHYTBV.i.mod1 <- lmer(log10(phyto_BV) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                        epi + Fish + scale(Elevation)*epi + scale(Elevation)*Fish + 
                        scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = d2)
+
+summary(PHYTBV.i.mod1)
+hist(residuals(PHYTBV.i.mod1))
+
+
+PHYTBV.i.mod1 <- lmer(log10(phyto_BV) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                        epi + Fish + scale(Elevation)*Fish + 
+                        scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = d2)
+
+summary(PHYTBV.i.mod1)
+hist(residuals(PHYTBV.i.mod1))
+
+
+PHYTBV.i.mod1 <- lmer(log10(phyto_BV) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                        epi + Fish + scale(Elevation)*Fish + (1|sample_num) + (1|Site), data = d2)
 
 summary(PHYTBV.i.mod1)
 hist(residuals(PHYTBV.i.mod1))
@@ -200,6 +232,8 @@ hist(residuals(ZOOSZ.mod1))
 #################
 # Zoop Fecundity #
 #################
+
+
 hist(cp$prop_gravid) # not normal
 hist(log10(cp$prop_gravid +1)) # better but not great
 hist(asin(sqrt(cp$prop_gravid +1))) 
@@ -217,6 +251,30 @@ ZOOG.mod1 <- lmer(log10(prop_gravid +1)  ~ scale(SA_m2) + scale(max_depth) + sca
 
 summary(ZOOG.mod1)
 hist(residuals(ZOOG.mod1))
+
+
+
+#ZOOG.i.mod1 <- glmer(cbind(#fecund, #not fecund)  ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + Fish + 
+#                      scale(Elevation)*Fish + scale(Elevation)*scale(max_depth) + (1|sample_num) + 
+#                      (1|Site), family=binomail data = cp)
+
+summary(ZOOG.i.mod1)
+hist(residuals(ZOOG.i.mod1))
+cp$num_notgravid
+
+
+ZOOGNG.i.mod1 <- glmer(cbind(num_gravid, num_notgravid)  ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + Fish + 
+                      scale(Elevation)*Fish + scale(Elevation)*scale(max_depth) + (1|sample_num) + 
+                      (1|Site), family =binomial, data = cp)
+
+summary(ZOOGNG.i.mod1)
+hist(residuals(ZOOGNG.i.mod1))
+
+ZOOGNG.mod1 <- glmer(cbind(num_gravid, num_notgravid)  ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                         Fish + (1|sample_num) + (1|Site), family =binomial, data = cp)
+
+summary(ZOOGNG.mod1)
+hist(residuals(ZOOGNG.i.mod1))
 
 ##################################################
 ##################################################

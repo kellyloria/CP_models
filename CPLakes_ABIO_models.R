@@ -202,6 +202,8 @@ r.squaredGLMM(TDN.D.mod1)
 AIC(TDN.A.mod1, TDN.B.mod1, TDN.C.mod1, TDN.D.mod1) 
 # B = best model 
 
+range(cp$NDVI)
+
 
 
 
