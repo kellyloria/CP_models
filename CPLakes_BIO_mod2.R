@@ -53,7 +53,7 @@ summary(PHYTR.mod1)
 hist(residuals(PHYTR.mod1))
 vif(PHYTR.mod1)
 # no significant drivers
-
+r.squaredGLMM()
 
 ##################
 # Zoop richness #
@@ -72,6 +72,7 @@ ZOOR.mod1 <- glmer(zoop_rich ~ scale(SA_m2) + scale(max_depth) + scale(Elevation
 summary(ZOOR.mod1)
 hist(residuals(ZOOR.mod1))
 vif(ZOOR.mod1)
+r.squaredLR(ZOOR.mod1)
 
 ##################
 # Total richness #
@@ -114,14 +115,14 @@ PHYTD.mod1 <- lmer(log10(phyto_den) ~ scale(SA_m2) + scale(max_depth) + scale(El
 summary(PHYTD.mod1)
 hist(residuals(PHYTD.mod1))
 
-
+r.squaredGLMM(PHYTD.mod1)
 
 PHYTD.mod1 <- lmer(log10(phyto_den) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                      epi + (1|sample_num) + (1|Site), data = d2)
 
 summary(PHYTD.mod1)
 hist(residuals(PHYTD.mod1))
-
+r.squaredGLMM(PHYTD.mod1)
 ################
 # Zoop Density #
 ################
@@ -151,6 +152,7 @@ ZOOD.mod1 <- lmer(log10(zoop_den +1) ~ scale(SA_m2) + scale(max_depth) + scale(E
 
 summary(ZOOD.mod1)
 hist(residuals(ZOOD.mod1))
+r.squaredGLMM(ZOOD.mod1)
 
 
 #####################################
@@ -228,6 +230,7 @@ ZOOSZ.mod1 <- lmer(Ave_size ~ scale(SA_m2) + scale(max_depth) + scale(Elevation)
 
 summary(ZOOSZ.mod1)
 hist(residuals(ZOOSZ.mod1))
+r.squaredGLMM(ZOOSZ.mod1)
 
 #################
 # Zoop Fecundity #
@@ -275,6 +278,7 @@ ZOOGNG.mod1 <- glmer(cbind(num_gravid, num_notgravid)  ~ scale(SA_m2) + scale(ma
 
 summary(ZOOGNG.mod1)
 hist(residuals(ZOOGNG.i.mod1))
+r.squaredLR(ZOOGNG.mod1)
 
 ##################################################
 ##################################################

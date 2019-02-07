@@ -289,4 +289,24 @@ CP_bio_pannel <- grid.arrange(CP_phyden_plot, CP_avesize_plot, CP_zooden_plot, C
 
 ggsave("CP_bio_pannel.pdf", CP_bio_pannel, scale = 2, width = 8.5, height = 6, units = c("cm"), dpi = 300)
 
+##########
+# coef_plot.csv
+
+co <- read.csv("coef_plot2.csv", header=T)
+names(co)
+summary(co)
+
+abio_coefplot <- ggplot(co, aes(y = response, x = elev_coef)) + ylab("Elevation coefficient") +
+  geom_errorbarh(aes(xmin=(elev_coef-st_error), xmax=(elev_coef+st_error)), height = 0) + 
+  geom_point(aes( shape=as.character.factor(Sig)), size=2.5) +
+  theme_classic() + theme(text = element_text(size=14), 
+                         plot.margin = unit(c(0.15, 0.15,0.5,1), "cm"))  + 
+  scale_x_continuous(limits=c(-0.4,0.15), breaks = c(-0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2))+ geom_vline(xintercept=0, 
+                color = "grey25", linetype="dashed", size=0.5)
+
+ggsave("abio_coefplot.pdf", abio_coefplot, scale = 2, width = 10, height = 6, units = c("cm"), dpi = 500)
+
+
+
+
 

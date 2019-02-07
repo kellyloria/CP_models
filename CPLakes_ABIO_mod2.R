@@ -11,6 +11,14 @@ library(nlme)
 library(car)
 library(gridExtra)
 
+library(ggplot2)
+library(broom)
+library(dplyr)
+library(dotwhisker)
+library(coefplot)
+
+
+
 d <- read.csv("2016_Comp_Lakes_water_chem.csv", header=T)
 names(d)
 w <- read.csv("COMPLAKES_2016data_a.csv", header=T)
@@ -110,9 +118,10 @@ DOC.mod4 <- lmer(log10(DOC_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale(El
 
 summary(DOC.mod4) # best model
 hist(residuals(DOC.mod4))
-vif(DOC.mod4)
+
 
 summary(d2$Site)
+r.squaredGLMM(DOC.mod4)
 
 ###########
 ### TDN ###
@@ -133,6 +142,7 @@ TDN.mod2 <- lmer(TDN_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
 summary(TDN.mod2) # best model
 hist(residuals(TDN.mod2))
 vif(TDN.mod2)
+r.squaredGLMM(TDN.mod2)
 
 ###########
 ### NO3 ###
@@ -165,8 +175,7 @@ N03.i.mod2a <- lmer(log10(NO3_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale
 
 summary(N03.i.mod2a) # best model 
 hist(residuals(N03.i.mod2a))
-
-
+r.squaredGLMM(N03.i.mod2a)
 
 AIC(N03.i.mod3, N03.i.mod3a, N03.i.mod3b)
 
@@ -187,6 +196,8 @@ P04.i.mod1 <- lmer(PO4_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation)
 
 summary(P04.i.mod1)
 hist(residuals(P04.i.mod1))
+?vif()
+vif(P04.i.mod1)
 
 P04.i.mod1a <- lmer(PO4_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                    epi + Fish + scale(Elevation)*Fish + 
@@ -210,6 +221,8 @@ PO4.mod2 <- lmer(PO4_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
 summary(PO4.mod2) # best model 
 hist(residuals(PO4.mod2))
 vif(PO4.mod2)
+r.squaredGLMM(PO4.mod2)
+
 
 summary(d2$Site)
 
@@ -276,8 +289,7 @@ FI.mod2 <- lmer(log10(FI) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
 summary(FI.mod2) # best model 
 hist(residuals(FI.mod2))
 vif(FI.mod2)
-
-
+r.squaredGLMM(FI.mod2)
 
 
 #############
@@ -343,7 +355,7 @@ chla.mod2 <- lmer(log10(chla +1) ~ scale(SA_m2) + scale(max_depth) + scale(Eleva
 
 summary(chla.mod2) #best model
 hist(residuals(chla.mod2))
-
+r.squaredGLMM(chla.mod2)
 
 ###########
 ### SO4 ###
@@ -407,7 +419,7 @@ Temp.mod2 <- lmer(Temp ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
 
 summary(Temp.mod2)
 hist(residuals(Temp.mod2))
-
+r.squaredGLMM(Temp.mod2)
 
 ############
 ### COND ###
@@ -445,6 +457,7 @@ Cond.mod2 <- lmer(log10(Conductivity) ~ scale(SA_m2) + scale(max_depth) + scale(
 
 summary(Cond.mod2) # best model
 hist(residuals(Cond.mod2)) ##cut mud lake out
+r.squaredGLMM(Cond.mod2)
 
 ##############
 ### SECCHI ###
@@ -475,7 +488,7 @@ Secchi.mod2 <- lmer(log10(Secchi) ~ scale(SA_m2) + scale(max_depth) + scale(Elev
 
 summary(Secchi.mod2)
 hist(residuals(Secchi.mod2))
-
+r.squaredGLMM(Secchi.mod2)
 
 #########################
 ### Light attenuation ###
@@ -500,7 +513,7 @@ PAR_atten.mod3 <- lmer(attentuation ~ scale(SA_m2) + scale(max_depth) + scale(El
 
 summary(PAR_atten.mod3)
 hist(residuals(PAR_atten.mod3))
-
+r.squaredGLMM(PAR_atten.mod3)
 
 
 ###########
@@ -510,7 +523,6 @@ hist(cp$rho_change.hypo_sur.)
 hist(log10(cp$rho_change.hypo_sur. +1))
 min(cp$rho_change.hypo_sur.) #one negative value check to see if that makes sense maybe just force to zero 
 # maybe subset without blue lake 
-cp$f
 RHO.i.mod1 <- lmer(rho_change.hypo_sur. ~ scale(SA_m2) + scale(max_depth) + scale(Elevation)+ 
                    + scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = cp2)
 
@@ -522,9 +534,18 @@ hist(residuals(RHO.i.mod1))
 RHO.mod2 <- lmer(rho_change.hypo_sur. ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                     (1|sample_num) + (1|Site), data = cp2)
 
+hist(cp2$delt_rho)
 summary(RHO.mod2)
 hist(residuals(RHO.mod2))
+r.squaredGLMM(RHO.mod2)
+cp2$delt_rho
 
+RHO.mod2 <- lmer(delt_rho ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                   (1|sample_num) + (1|Site), data = cp2)
+
+summary(RHO.mod2)
+hist(residuals(RHO.mod2))
+r.squaredGLMM(RHO.mod2)
 # mer.tools for vif with mixed effect models 
 # don't remove terms with VIF -- 
 # VIF just tells us if  
@@ -778,3 +799,7 @@ ggsave("Interaction_secchi_maxdepth.pdf",
        scale = 2, width = 7, height = 5, units = c("cm"), dpi = 300) 
 
 summary(d2$SA_m2)
+
+
+### Coeficient plot
+?coefplot
