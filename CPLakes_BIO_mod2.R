@@ -85,6 +85,16 @@ TOTALR.i.mod1 <- glmer(total_rich ~ scale(SA_m2) + scale(max_depth) + scale(Elev
 
 summary(TOTALR.i.mod1)
 hist(residuals(TOTALR.i.mod1))
+# possible in lakes with fish that it is too harsh for other other species too
+
+hist(cp$total_rich) # fairly normal 
+
+TOTALR.i.mod1 <- glmer(total_rich ~scale(Elevation) + (1|sample_num) + 
+                         (1|Site), family = poisson, data = cp)
+
+summary(TOTALR.i.mod1)
+hist(residuals(TOTALR.i.mod1))
+
 # no sig interactions
 
 TOTALR.mod1 <- glmer(total_rich ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + Fish + 
@@ -92,6 +102,10 @@ TOTALR.mod1 <- glmer(total_rich ~ scale(SA_m2) + scale(max_depth) + scale(Elevat
 
 summary(TOTALR.mod1)
 hist(residuals(TOTALR.mod1))
+
+
+
+
 # cut total and phyto ricness-- phytoplankton 
 
 

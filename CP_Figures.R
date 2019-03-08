@@ -232,7 +232,7 @@ ggsave("CP_abio_pannel4.pdf", CP_abio_pannel4, scale = 2, width = 17, height = 1
 ########### panel of bio figures #############
 
 PHYTD.mod1 <- lmer(log10(phyto_den) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                     epi + Fish + (1|sample_num) + (1|Site), data = d2)
+                     epi + Fish + (1|sample_num) + (1|Site), data = d3)
 
 summary(PHYTD.mod1)
 hist(residuals(PHYTD.mod1))
@@ -296,17 +296,45 @@ co <- read.csv("coef_plot2.csv", header=T)
 names(co)
 summary(co)
 
-abio_coefplot <- ggplot(co, aes(y = response, x = elev_coef)) + ylab("Elevation coefficient") +
-  geom_errorbarh(aes(xmin=(elev_coef-st_error), xmax=(elev_coef+st_error)), height = 0) + 
-  geom_point(aes( shape=as.character.factor(Sig)), size=2.5) +
-  theme_classic() + theme(text = element_text(size=14), 
-                         plot.margin = unit(c(0.15, 0.15,0.5,1), "cm"))  + 
-  scale_x_continuous(limits=c(-0.4,0.15), breaks = c(-0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2))+ geom_vline(xintercept=0, 
-                color = "grey25", linetype="dashed", size=0.5)
+abio_coefplot <- ggplot(co, aes(y = response, x = elev_coef)) + xlab("Coefficient estimate") + ylab("") + 
+  geom_vline(xintercept=0, color = "grey35", size=0.75) +
+  geom_errorbarh(aes(xmin=(elev_coef-st_error), xmax=(elev_coef+st_error)), height = 0, size= 1) + 
+  geom_point(aes(shape=as.character.factor(Sig), color=as.character.factor(Sig)), size=4) +
+  theme_bw() + theme(axis.title.x = element_text(size=19, margin = margin(t = 10, r = 20, b = 0, l = 0)), 
+                     axis.text.x  = element_text(vjust=0.5, size=16), 
+                     axis.text.y  = element_text(vjust=0.5, size=16),
+                          text = element_text(size=16), 
+                         plot.margin = unit(c(0.15, 0.15,0.15,0.15), "cm"),
+                     legend.justification=c(-0.1,-0.1), legend.position=c(0,0.65),
+                     legend.background = element_rect(size=.5, linetype="dotted"))  + 
+  scale_x_continuous(limits=c(-0.4,0.15), breaks = c(-0.4, -0.3, -0.2, -0.1, 0, 0.1, 0.2)) +
+  scale_colour_manual(values = c("dodgerblue2", "tomato3", "palegreen4"))
 
-ggsave("abio_coefplot.pdf", abio_coefplot, scale = 2, width = 10, height = 6, units = c("cm"), dpi = 500)
+ggsave("abio_coefplot.pdf", abio_coefplot, scale = 5, width = 39, height = 24, units = c("mm"), dpi = 1500)
 
+names(d2)
+cp$Ave_size
+d3 <- subset(d2, Elevation > 3450,
+             select= Site:phyto_den)
+summary(d3$Elevation)
+mean(na.omit(d3$FI))
 
+d4 <- subset(d2, Elevation < 3000,
+             select= Site:phyto_den)
+summary(na.omit(d4$FI))
 
+mean(na.omit(d4$FI))/(mean(na.omit(d3$Ave_size)))
+1-0.5032808
 
+range(na.omit(d2$FI))
+
+CP_phyden_plot <- ggplot(d2, aes(x = Elevation, y = FI)) + ylab("log10(phyto density)") +
+  geom_point(aes(colour = as.factor(epi), shape=as.factor(Fish))) + geom_smooth(method = "glm", colour = 'grey30') +
+  theme_classic() + theme(text = element_text(size=14),                          
+                          axis.title.x=element_blank(),
+                          plot.margin = unit(c(0.15, 0,0.5,1.2), "cm")) + 
+  scale_x_continuous(breaks=seq(2400,3600,150))  + 
+  scale_colour_manual(values = c("dodgerblue4", "sky blue"))
+
+mean(na.omit(d3$FI))
 

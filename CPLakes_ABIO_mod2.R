@@ -89,8 +89,6 @@ cp2 <- subset(cp, Site=="Albion" | Site=="GL4" | Site=="Lost Lake"
               select= Site:Sort)
 summary(cp2$Site)
 
-
-
 #######################################
 # Relevant factors for abiotic qualities of lakes and their dataframes: 
 # DF= w: Temp, chlor-a, conductivity, secchi, light at surface
@@ -282,7 +280,6 @@ summary(FI.i.mod1)
 hist(residuals(FI.i.mod1))
 vif(FI.i.mod1)
 
-
 FI.mod2 <- lmer(log10(FI) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                    epi + Fish + (1|sample_num) + (1|Site), data = d2)
 
@@ -420,6 +417,7 @@ Temp.mod2 <- lmer(Temp ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
 summary(Temp.mod2)
 hist(residuals(Temp.mod2))
 r.squaredGLMM(Temp.mod2)
+vif(Temp.mod2)
 
 ############
 ### COND ###
@@ -458,6 +456,7 @@ Cond.mod2 <- lmer(log10(Conductivity) ~ scale(SA_m2) + scale(max_depth) + scale(
 summary(Cond.mod2) # best model
 hist(residuals(Cond.mod2)) ##cut mud lake out
 r.squaredGLMM(Cond.mod2)
+
 
 ##############
 ### SECCHI ###
