@@ -1,0 +1,13 @@
+response,elev_coef,st_error,pval,Sig
+B_SPC,-0.179,0.037,0.0003,C_significant 
+C_DOC*tran,-0.164,0.037,0.0003,C_significant 
+E_PAR_AT*tran,-0.059,0.014,0.0001,C_significant 
+F_RHO,-0.018,0.004,0.0003,C_significant 
+H_PO4,-0.015,0.005,0.0162,C_significant 
+I_NO3*trans,0.204,0.054,0.0029,C_significant 
+J_Secchi,0.072,0.036,0.0672,b_marginal 
+L_SO4*transform,-0.056,0.090,0.5460,A_not significant
+M_Chla*Tran,-0.025,0.048,0.6080,A_not significant
+K_pH,-0.015,0.075,0.8423,A_not significant
+N_FI,-0.005,0.004,0.1789,A_not significant
+O_TDP* transformed,0.024,0.018,0.2115,A_not significant

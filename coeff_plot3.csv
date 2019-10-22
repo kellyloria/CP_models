@@ -1,0 +1,5 @@
+response,elev_coef,st_error,pval,Sig
+A.zoop size,0.15,0.04,0.003,significant 
+B.Zoo denisty,-0.26,0.09,0.013,significant 
+C.Phyto density,-0.15,0.07,0.058,marginal 
+E.chla,-0.03,0.06,0.570,not significant

@@ -1,13 +1,13 @@
 response,elev_coef,st_error,pval,Sig
-B_PAR_AT,-0.30496,0.0734,0.000136,significant 
-C_DOC,-0.164551,0.03392,0.000289,significant 
-D_Cond,-0.12611,0.04607,0.0178,significant 
-E_TDN,-0.048389,0.017761,0.0182,significant 
-F_RHO,-0.009374,0.004011,0.037723,significant 
-G_PO4,-1.52E-04,4.82E-05,0.00206,significant 
-H_NO3,6.75E-02,2.48E-02,0.0203,significant 
-I_Secchi,0.07094,0.03666,0.0793,marginal 
-J_TDP,-0.0009598,0.000553,0.11,not significant
-K_FI,-0.001748,0.001264,0.17076,not significant
-L_SO4,-0.036121,0.053287,0.508948,not significant
-M_Chla,-0.006993,0.042588,0.8722,not significant
+A.kpar' +1,-0.305,0.07,0.0001,significant 
+B.NO3' +1,0.237,0.07,0.005,significant 
+D.Conductivity' ,-0.127,0.05,0.014,significant 
+E.PO4,-0.015,0.015,0.02,significant 
+H.Change in rho,-0.015,0.01,0.046,significant 
+J.DOC' +1,-0.103,0.05,0.049,significant 
+K.Secchi,0.071,0.04,0.079,marginal
+L.TDN,-1.978,1.6,0.241,not significant
+M.TDP' +1,0.018,0.02,0.383,not significant
+N.pH,-0.082,0.1,0.423,not significant
+O.SO4'+1,-0.008,0.07,0.912,not significant
+P.FI',-0.0001,0.01,0.984,not significant

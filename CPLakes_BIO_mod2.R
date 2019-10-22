@@ -18,6 +18,9 @@ names(w)
 cp <- read.csv("comp_lakes_master_data_2.csv", header=T)
 names(cp)
 
+sz <- read.csv("CL_zoo_size_piet.csv", header=T)
+names(sz)
+
 # Subset df d for sur and hypo samples only (GLV lakes have meta too)
 #surface measurements:
 head(d)
@@ -53,7 +56,7 @@ summary(PHYTR.mod1)
 hist(residuals(PHYTR.mod1))
 vif(PHYTR.mod1)
 # no significant drivers
-r.squaredGLMM()
+r.squaredGLMM(PHYTR.mod1)
 
 ##################
 # Zoop richness #
@@ -161,10 +164,17 @@ hist(residuals(ZOOD.mod1))
 vif(ZOOD.mod1)
 
 
-ZOOD.mod1 <- lmer(log10(zoop_den +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
+ZOOD.mod1 <- lmer(log10(zoop_den2 +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
                     (1|sample_num) + (1|Site), data = cp)
 
 summary(ZOOD.mod1)
+hist(residuals(ZOOD.mod1))
+r.squaredGLMM(ZOOD.mod1)
+
+ZOOD.mod2 <- lmer(log10(zoop_den2 +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
+                    scale(sample_num) + (1|Site), data = cp)
+
+summary(ZOOD.mod2)
 hist(residuals(ZOOD.mod1))
 r.squaredGLMM(ZOOD.mod1)
 
@@ -292,7 +302,52 @@ ZOOGNG.mod1 <- glmer(cbind(num_gravid, num_notgravid)  ~ scale(SA_m2) + scale(ma
 
 summary(ZOOGNG.mod1)
 hist(residuals(ZOOGNG.i.mod1))
-r.squaredLR(ZOOGNG.mod1)
+r.squaredGLMM(ZOOGNG.mod1)
+
+
+
+
+ZOOGNG.mod1 <- glm(Fish  ~  scale(Elevation), family =binomial, data = cp)
+
+summary(ZOOGNG.mod1)
+hist(residuals(ZOOGNG.mod1))
+r.squaredGLMM(ZOOGNG.mod1)
+
+###### cop size######
+hist(sz$cop.count)
+hist(sz$WEIGHTED_MEAN_SIZE)
+hist(log10(sz$WEIGHTED_MEAN_SIZE +1))
+
+weight.sz.mod1 <- lmer(WEIGHTED_MEAN_SIZE  ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + fish +
+                    (1|sample_num) + (1|Site), data = sz)
+
+summary(weight.sz.mod1)
+r.squaredGLMM(weight.sz.mod1)
+
+hist(residuals(weight.sz.mod1))
+
+cop.sz.mod2 <- glmer(cbind(cop.size, cop.count)  ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + fish + 
+                         scale(Elevation)*fish + scale(Elevation)*scale(max_depth) + (1|sample_num) + 
+                         (1|Site), family =binomial, data = sz)
+
+summary(cop.sz.mod2)
+
+cop.sz.mod2 <- glmer(cbind(cop.size, cop.count)  ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + fish  + 
+                       (1|sample_num) + (1|Site), family =binomial, data = sz)
+
+summary(cop.sz.mod2)
+
+
+hist(sz$clad.count)
+hist(sz$cop.size)
+hist(log10(sz$clad.size +1))
+
+clad.sz.mod1 <- lmer(clad.size  ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + fish +
+                      (1|sample_num) + (1|Site), data = sz)
+
+summary(clad.sz.mod1)
+
+
 
 ##################################################
 ##################################################
@@ -319,3 +374,43 @@ r.squaredLR(ZOOGNG.mod1)
 #    1. Phytoplankton genera richness
 
 
+# percent change numbers for Discussion
+summary(cp)
+cp_alpine <- cp %>% 
+  subset(Alpin_H_M_L == "High")
+summary(cp_alpine)
+
+cp_subap <- cp %>% 
+  subset(Alpin_H_M_L == "Medium")
+summary(cp_subap)
+
+d_alpine <- d %>% 
+  subset(apline == "alpine")
+summary(d_alpine)
+
+d_subap <- d %>% 
+  subset(apline == "sub")
+summary(d_subap)
+
+# 
+pdiff <- mean(na.omit(d_subap$phyto_den)) - mean(na.omit(d_alpine$phyto_den))
+pdiff/mean(na.omit(d_subap$phyto_den)) * 100
+
+
+summary(d)
+
+
+sz_alpine <- sz %>% 
+  subset(alpine == "alpine")
+summary(sz_alpine)
+
+sz_subap <- sz %>% 
+  subset(alpine == "sub")
+summary(sz_subap)
+
+# 
+szdiff <- mean(na.omit(sz_subap$WEIGHTED_MEAN_SIZE)) - mean(na.omit(sz_alpine$WEIGHTED_MEAN_SIZE))
+szdiff/mean(na.omit(sz_subap$WEIGHTED_MEAN_SIZE)) * 100
+
+szdiff <- mean(na.omit(sz_alpine$cop.size)) - mean(na.omit(sz_subap$cop.size))
+szdiff/mean(na.omit(sz_alpine$cop.size))  * 100

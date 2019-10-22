@@ -31,53 +31,65 @@ names(cp)
 head(d)
 
 d2 <- subset(d, sample_depth=="sur" | sample_depth=="hypo",
-             select= Site:phyto_den)
+             select= Site:NDVI_QAQC)
 summary(d2$sample_depth)
 
 head(w)
 w2 <- subset(w, sample_depth=="sur" | sample_depth=="hypo",
-             select= Date:Elevation)
+             select= Date:NDVI)
 summary(w2$sample_depth)
 w2$Site
 
 
 summary(d2$Site)
-d3 <- subset(d2, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" 
+d_v1 <- subset(d2, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" 
              | Site=="Blue Lake" | Site=="Isabelle Lake" | Site=="Snowbank Lake" 
-             | Site=="Diamond Lake" | Site=="MudLake" | Site=="Jasper Lake" 
+             | Site=="Diamond Lake" | Site=="Mud Lake" | Site=="Jasper Lake" 
              | Site=="Upper Diamond Lake "| Site=="Forest Lake"| Site=="Lion Lake 2"
              | Site=="Pear Reservoir" | Site=="Yankee Doodle " | Site=="GL1" 
-             | Site=="Long Lake" | Site=="Red Deer Lake" | Site=="GL1", 
-             select= Site:phyto_den)
+             | Site=="Long Lake" | Site=="Red Deer Lake" | Site=="GL1"
+             | Site=="Mitchell Lake" | Site=="Red Rock Lake",
+             select= Site:NDVI_QAQC)
+summary(d_v1$Site)
+
+
+d3 <- subset(d2, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" 
+                    | Site=="Blue Lake" | Site=="Isabelle Lake" | Site=="Snowbank Lake" 
+                    | Site=="Diamond Lake" | Site=="MudLake" | Site=="Jasper Lake" 
+                    | Site=="Upper Diamond Lake "| Site=="Forest Lake"| Site=="Lion Lake 2"
+                    | Site=="Pear Reservoir" | Site=="Yankee Doodle " | Site=="GL1" 
+                    | Site=="Long Lake" | Site=="Red Deer Lake" | Site=="Mitchell Lake" | Site=="Red Rock Lake", 
+                    select= Site:NDVI_QAQC)
 summary(d3$Site)
+
 
 head(w)
 w2 <- subset(w, sample_depth=="sur" | sample_depth=="hypo",
-             select= Date:Elevation)
+             select= Date:NDVI)
 summary(w2$sample_depth)
 w2$Site
 w3 <- subset(w, sample_depth=="sur",
-             select= Date:Elevation)
+             select= Date:NDVI)
 summary(w3$sample_depth)
 w3$Site
 
-w4 <- subset(w2, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" | Site=="RedRock Lake" 
+w_v1 <- subset(w2, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" 
              | Site=="Blue Lake" | Site=="Isabelle Lake" | Site=="Snowbank Lake" 
-             | Site=="Diamond Lake" | Site=="MitchellLake" | Site=="Jasper Lake" 
+             | Site=="Diamond Lake" | Site=="Mud Lake" | Site=="Jasper Lake" 
              | Site=="Upper Diamond Lake "| Site=="Forest Lake"| Site=="Lion Lake 2"
              | Site=="Pear Reservoir" | Site=="Yankee Doodle " | Site=="GL1" 
-             | Site=="Long Lake" | Site=="Red Deer Lake", 
-             select= Date:Elevation)
-summary(w4$Site)
+             | Site=="Long Lake" | Site=="Red Deer Lake" | Site=="GL1"
+             | Site=="Mitchell Lake" | Site=="Red Rock Lake", select= Date:Elevation)
+summary(w_v1$Site)
 
-w4m <- subset(w2, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" | Site=="Red Rock Lake" 
-             | Site=="BlueLake" | Site=="Isabelle Lake" | Site=="Snowbank Lake" 
+w4.3 <- subset(w, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" | Site=="Red Rock Lake" 
+             | Site=="Blue Lake" | Site=="Isabelle Lake" | Site=="Snowbank Lake" 
              | Site=="Diamond Lake" | Site=="Mitchell Lake" | Site=="Jasper Lake" 
              | Site=="Upper Diamond Lake "| Site=="Forest Lake"| Site=="Lion Lake 2"
              | Site=="Pear Reservoir" | Site=="Yankee Doodle " | Site=="GL1" 
-             | Site=="Long Lake" | Site=="Mud Lake" | Site=="Red Deer Lake", 
+             | Site=="Long Lake" | Site=="MudLake" | Site=="Red Deer Lake", 
              select= Date:Elevation)
-summary(w4m$Site)
+summary(w4.3$Site)
 
 
 cp2 <- subset(cp, Site=="Albion" | Site=="GL4" | Site=="Lost Lake" 
@@ -102,7 +114,7 @@ summary(cp2$Site)
 # interactions
 DOC.i.mod1 <- lmer(log10(DOC_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                     epi + Fish + scale(Elevation)*epi + scale(Elevation)*Fish + 
-                    scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = d2)
+                    scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = d_v1)
 
 summary(DOC.i.mod1)
 hist(residuals(DOC.i.mod1))
@@ -118,12 +130,20 @@ summary(DOC.mod4) # best model
 hist(residuals(DOC.mod4))
 
 
+DOC.mod4 <- lmer(log10(DOC_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                   epi + Fish + (1|sample_num) + (1|Site), data = d3)
+
+summary(DOC.mod4) # best model
+hist(residuals(DOC.mod4))
+
 summary(d2$Site)
 r.squaredGLMM(DOC.mod4)
 
 ###########
 ### TDN ###
 ###########
+hist(d3$TDN_mg_L)
+hist(log10(d3$TDN_mg_L +1))
 
 
 TDN.i.mod1 <- lmer(TDN_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
@@ -134,19 +154,21 @@ summary(TDN.i.mod1)
 hist(residuals(TDN.i.mod1))
 # no sig. interactions
 
-TDN.mod2 <- lmer(TDN_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                   epi + Fish + (1|sample_num) + (1|Site), data = d2)
+hist(d3$TDN_uMOL_L)
+hist(log10(d3$TDN_uMOL_L))
+
+TDN.mod2 <- lmer((TDN_uMOL_L) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                   epi + Fish + (1|sample_num) + (1|Site), data = d3)
 
 summary(TDN.mod2) # best model
 hist(residuals(TDN.mod2))
-vif(TDN.mod2)
 r.squaredGLMM(TDN.mod2)
 
 ###########
 ### NO3 ###
 ###########
-hist((d2$NO3_mg_L))
-hist(log10(d2$NO3_mg_L +1)) # not better
+hist((d3$NO3_uMOL))
+hist(log10(d3$NO3_uMOL +1)) # not better
 
 hist((d3$NO3_mg_L))
 hist(log10(d3$NO3_mg_L +1))
@@ -168,8 +190,8 @@ summary(N03.i.mod2)
 hist(residuals(N03.i.mod2))
 
 
-N03.i.mod2a <- lmer(log10(NO3_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                     epi + Fish + scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = d2)
+N03.i.mod2a <- lmer(log10(NO3_uMOL +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                     epi + Fish + (1|sample_num) + (1|Site), data = d3)
 
 summary(N03.i.mod2a) # best model 
 hist(residuals(N03.i.mod2a))
@@ -178,7 +200,7 @@ r.squaredGLMM(N03.i.mod2a)
 AIC(N03.i.mod3, N03.i.mod3a, N03.i.mod3b)
 
 N03.mod4 <- lmer(log10(NO3_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) +
-                   epi + (1|sample_num) + (1|Site), data = d2)
+                   epi + (1|sample_num) + (1|Site), data = d3)
 
 summary(N03.mod4)
 hist(residuals(N03.mod4))
@@ -187,8 +209,9 @@ vif(N03.mod4)
 ###########
 ### PO4 ###
 ###########
-hist(d2$PO4_mg_L)
-P04.i.mod1 <- lmer(PO4_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+hist(d3$PO4_uMOL)
+hist(log10(d2$PO4_mg_L +1))
+P04.i.mod1 <- lmer(PO4_uMOL ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                    epi + Fish + scale(Elevation)*epi + scale(Elevation)*Fish + 
                    scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = d2)
 
@@ -213,8 +236,8 @@ hist(residuals(P04.i.mod2))
 
 AIC(P04.mod1, P04.mod1a)
 
-PO4.mod2 <- lmer(PO4_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                   epi + Fish + (1|sample_num) + (1|Site), data = d2)
+PO4.mod2 <- lmer(PO4_uMOL ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                   epi + Fish + (1|sample_num) + (1|Site), data = d3)
 
 summary(PO4.mod2) # best model 
 hist(residuals(PO4.mod2))
@@ -224,16 +247,18 @@ r.squaredGLMM(PO4.mod2)
 
 summary(d2$Site)
 
-PO4.mod3 <- lmer(PO4_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+PO4.mod3 <- lmer(log10(PO4_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                    epi + Fish + (1|sample_num) + (1|Site), data = d3)
 
 summary(PO4.mod3)
 hist(residuals(PO4.mod3))
+r.squaredGLMM(PO4.mod3)
+
 vif(PO4.mod3)
 
 #### TDP ####
-hist(d2$TDP_mg_L)
-hist(log10(d2$TDP_mg_L + 1))
+hist(d3$TDP_uMOL)
+hist(log10(d3$TDP_uMOL + 1))
 hist(d3$TDP_mg_L) # D3 looks best
 hist(log10(d3$TDP_mg_L + 1))
 
@@ -258,18 +283,18 @@ TDP.i.mod1c <- lmer(TDP_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation
 summary(TDP.i.mod1c)
 hist(residuals(TDP.i.mod1c))
 
-TDP.mod2 <- lmer(TDP_mg_L ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                      epi + (1|sample_num) + (1|Site), data = d2)
+TDP.mod2 <- lmer(log10(TDP_uMOL +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                      epi + (1|sample_num) + (1|Site), data = d3)
 
 summary(TDP.mod2)
 hist(residuals(TDP.mod2))
-
+r.squaredGLMM(TDP.mod2)
 
 
 ##########
 ### FI ###
 ##########
-hist((d2$FI)) #normal
+hist((d3$FI)) #normal
 hist(log10(d2$FI))
 max(na.omit(d2$FI))
 FI.i.mod1 <- lmer(log10(FI) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
@@ -280,47 +305,27 @@ summary(FI.i.mod1)
 hist(residuals(FI.i.mod1))
 vif(FI.i.mod1)
 
-FI.mod2 <- lmer(log10(FI) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                   epi + Fish + (1|sample_num) + (1|Site), data = d2)
+FI.mod2 <- lmer((FI) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                   epi + Fish + (1|sample_num) + (1|Site), data = d3)
 
 summary(FI.mod2) # best model 
 hist(residuals(FI.mod2))
 vif(FI.mod2)
 r.squaredGLMM(FI.mod2)
 
-
-#############
-### SUVA ###
-############
-hist((d2$SUVA)) #normal
-
-SUVA.i.mod1 <- lmer(SUVA ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                  epi + Fish + scale(Elevation)*epi + scale(Elevation)*Fish + 
-                  scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = d2)
-
-summary(SUVA.i.mod1)
-hist(residuals(SUVA.i.mod1))
-
-SUVA.mod2 <- lmer(SUVA ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                  epi + Fish + (1|sample_num) + (1|Site), data = d2)
-
-summary(SUVA.mod2)
-hist(residuals(SUVA.mod2))
-vif(SUVA.mod2)
-
 ###############
 ### Chlor-a ###
 ##############
 
-hist((d2$chla))
-hist(log10(d2$chla +1)) 
+hist((d3$chla))
+hist(log10(d3$chla +1)) 
 
 hist((d3$chla))
 hist(log10(d3$chla +1)) 
 
 chla.i.mod1 <- lmer(log10(chla +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                     epi + Fish + scale(Elevation)*epi + scale(Elevation)*Fish + 
-                    scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = d2)
+                    scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = d3)
 
 summary(chla.i.mod1)
 hist(residuals(chla.i.mod1))
@@ -348,7 +353,7 @@ hist(residuals(chla.mod3a))
 
 
 chla.mod2 <- lmer(log10(chla +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                    epi + Fish + (1|sample_num) + (1|Site), data = d2)
+                    epi + Fish + (1|sample_num) + (1|Site), data = d3)
 
 summary(chla.mod2) #best model
 hist(residuals(chla.mod2))
@@ -358,8 +363,8 @@ r.squaredGLMM(chla.mod2)
 ### SO4 ###
 ###########
 
-hist((d2$SO4_mg_L))
-hist(log10(d2$SO4_mg_L +1)) 
+hist((d3$SO4_uMOL))
+hist(log10(d3$SO4_uMOL)) 
 
 hist((d3$SO4_mg_L))
 hist(log10(d3$SO4_mg_L +1)) 
@@ -379,8 +384,8 @@ summary(SO4.i.mod1a)
 hist(residuals(SO4.i.mod1a))
 
 
-SO4.i.mod1b <- lmer(log10(SO4_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                    epi + Fish + scale(Elevation)*Fish + (1|sample_num) + (1|Site), data = d2)
+SO4.i.mod1b <- lmer(log10(SO4_uMOL) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                    epi + Fish + scale(Elevation)*Fish + (1|sample_num) + (1|Site), data = d3)
 
 summary(SO4.i.mod1b)
 hist(residuals(SO4.i.mod1b))
@@ -389,19 +394,19 @@ AIC(SO4.i.mod1, SO4.i.mod1a, SO4.i.mod1b)
 
 
 
-SO4.mod2 <- lmer(log10(SO4_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                   epi + Fish + (1|sample_num) + (1|Site), data = d2)
+SO4.mod2 <- lmer(log10(SO4_uMOL) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                   epi + Fish + (1|sample_num) + (1|Site), data = d3)
 
 summary(SO4.mod2)
 hist(residuals(SO4.mod2))
-
+r.squaredGLMM(SO4.mod2)
 
 ############
 ### Temp ###
 ############
 # DF= w: Temp, conductivity, secchi, light at surface
 
-hist((w2$Temp))
+hist((w4.3$Temp))
 
 Temp.i.mod1 <- lmer(Temp ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                    epi +  scale(Elevation)*epi  + 
@@ -412,12 +417,21 @@ hist(residuals(Temp.i.mod1))
 
 
 Temp.mod2 <- lmer(Temp ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                   epi + (1|sample_num) + (1|Site), data = w2)
+                   epi + (1|sample_num) + (1|Site), data = w4.3)
 
 summary(Temp.mod2)
 hist(residuals(Temp.mod2))
 r.squaredGLMM(Temp.mod2)
 vif(Temp.mod2)
+
+hist(w2$pH)
+ph.mod2 <- lmer(pH ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                    epi + (1|sample_num) + (1|Site), data = w4.3)
+
+summary(ph.mod2)
+hist(residuals(ph.mod2))
+r.squaredGLMM(ph.mod2)
+
 
 ############
 ### COND ###
@@ -429,7 +443,7 @@ hist(log10(w2$Conductivity))
 
 Cond.i.mod1 <- lmer(log10(Conductivity) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
                     epi + fish + scale(Elevation)*epi + scale(Elevation)*fish + 
-                    scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = w4m)
+                    scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = w4.4)
 
 summary(Cond.i.mod1)
 hist(residuals(Cond.i.mod1))
@@ -451,7 +465,7 @@ hist(residuals(Cond.i.mod1b))
 
 
 Cond.mod2 <- lmer(log10(Conductivity) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                    epi + fish + (1|sample_num) + (1|Site), data = w4m)
+                    epi + fish + (1|sample_num) + (1|Site), data = w2)
 
 summary(Cond.mod2) # best model
 hist(residuals(Cond.mod2)) ##cut mud lake out
@@ -465,9 +479,9 @@ r.squaredGLMM(Cond.mod2)
 
 hist((w2$Secchi))
 hist(log10(w2$Secchi))
-hist(log10(w4$Secchi))
+hist(log10(cp$Secchi))
 
-Secchi.i.mod1 <- lmer(log10(Secchi) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+Secchi.i.mod1 <- lmer(log10(Secchi) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + Fish +
                         Fish + scale(Elevation)*Fish + scale(Elevation)*scale(max_depth) + 
                         (1|sample_num) + (1|Site), data = cp)
 
@@ -482,38 +496,58 @@ summary(Secchi.i.mod1a)
 hist(residuals(Secchi.i.mod1a))
 
 
-Secchi.mod2 <- lmer(log10(Secchi) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + Fish +
+Secchi.mod2 <- lmer(log10(Secchi) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation)  +
                   (1|sample_num) + (1|Site), data = cp)
 
 summary(Secchi.mod2)
 hist(residuals(Secchi.mod2))
 r.squaredGLMM(Secchi.mod2)
 
+names(cp)
+
+
+Secchi.mod2 <- glm((NDVI) ~ scale(Elevation), data = cp)
+
+summary(Secchi.mod2)
+
 #########################
 ### Light attenuation ###
 #########################
 
+hist((w2$Light.at.surface))
+hist(log10(w2$Secchi))
+hist(log10(cp$Secchi))
+
 PAR_atten.mod1 <- lmer(Light.at.surface ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                         fish + scale(Elevation)*fish + scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = w4)
+                         fish + scale(Elevation)*fish + scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = w3)
 
 summary(PAR_atten.mod1)
 hist(residuals(PAR_atten.mod1))
-
+names(w3)
+hist(w$Light.at.surface)
+hist(cp$attentuation)
 
 PAR_atten.mod2 <- lmer(Light.at.surface ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                         fish + (1|sample_num) + (1|Site), data = w2)
+                         fish + (1|sample_num) + (1|Site), data = w)
 
 summary(PAR_atten.mod2)
 hist(residuals(PAR_atten.mod2))
+r.squaredGLMM(PAR_atten.mod2)
 
-hist(cp$visit_re)
-PAR_atten.mod3 <- lmer(attentuation ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                         Fish + as.factor(1|sample_num) + (1|Site), data = cp)
+hist(cp$attentuation)
+PAR_atten.mod3 <- lmer(log10(attentuation +1) ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
+                         Fish  + (1|Site), data = cp)
 
 summary(PAR_atten.mod3)
 hist(residuals(PAR_atten.mod3))
 r.squaredGLMM(PAR_atten.mod3)
 
+
+10^(-0.058842-1)
+10^(0.058842-1)
+10^(-1)
+exp()
+exp(0.033942-1)
 
 ###########
 ### RHO ###
@@ -523,24 +557,25 @@ hist(log10(cp$rho_change.hypo_sur. +1))
 min(cp$rho_change.hypo_sur.) #one negative value check to see if that makes sense maybe just force to zero 
 # maybe subset without blue lake 
 RHO.i.mod1 <- lmer(rho_change.hypo_sur. ~ scale(SA_m2) + scale(max_depth) + scale(Elevation)+ 
-                   + scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = cp2)
+                   + scale(Elevation)*scale(max_depth) + (1|sample_num) + (1|Site), data = cp)
 
 summary(RHO.i.mod1)
 hist(residuals(RHO.i.mod1))
+r.squaredGLMM(RHO.i.mod1)
 
 
 
 RHO.mod2 <- lmer(rho_change.hypo_sur. ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                    (1|sample_num) + (1|Site), data = cp2)
+                    (1|sample_num) + (1|Site), data = cp)
 
-hist(cp2$delt_rho)
+hist(cp$delt_rho)
 summary(RHO.mod2)
 hist(residuals(RHO.mod2))
 r.squaredGLMM(RHO.mod2)
 cp2$delt_rho
 
 RHO.mod2 <- lmer(delt_rho ~ scale(SA_m2) + scale(max_depth) + scale(Elevation) + 
-                   (1|sample_num) + (1|Site), data = cp2)
+                   (1|sample_num) + (1|Site), data = cp)
 
 summary(RHO.mod2)
 hist(residuals(RHO.mod2))
@@ -798,7 +833,123 @@ ggsave("Interaction_secchi_maxdepth.pdf",
        scale = 2, width = 7, height = 5, units = c("cm"), dpi = 300) 
 
 summary(d2$SA_m2)
+###############################
 
 
-### Coeficient plot
-?coefplot
+#################################
+
+
+
+### NDVI and water clarity ###
+DOC.ndmod4 <- lmer(log10(DOC_mg_L +1) ~ scale(SA_m2) + scale(max_depth) + scale(NDVI_QAQC) + 
+                   epi + Fish + (1|sample_num) + (1|Site), data = d2)
+
+summary(DOC.ndmod4) # best model
+hist(residuals(DOC.ndmod4))
+
+
+PAR_atten.ndmod2 <- lmer(Light.at.surface ~ scale(SA_m2) + scale(max_depth) + scale(NDVI_QAQC) + 
+                         fish + (1|sample_num) + (1|Site), data = w2)
+
+summary(PAR_atten.ndmod2)
+hist(residuals(PAR_atten.ndmod2))
+
+
+
+FI.ndmod2 <- lmer(log10(FI) ~ scale(SA_m2) + scale(max_depth) + scale(NDVI_QAQC) + 
+                  epi + Fish + (1|sample_num) + (1|Site), data = d2)
+
+summary(FI.ndmod2) # best model 
+hist(residuals(FI.ndmod2))
+r.squaredGLMM(FI.ndmod2)
+
+
+Secchi.ndmod2 <- lmer(log10(Secchi) ~ scale(SA_m2) + scale(max_depth) + scale(NDVI_QAQC) + Fish +
+                      (1|sample_num) + (1|Site), data = cp)
+
+summary(Secchi.ndmod2)
+hist(residuals(Secchi.ndmod2))
+r.squaredGLMM(Secchi.ndmod2)
+
+### Site averages ###
+names(w)
+w$Chl.a
+mean(na.omit(dk$SO4_mg_L))
+range(na.omit(dk$SO4_mg_L))
+dk <- subset(d, Site=="Albion" | Site=="/GL4" | Site=="Lost Lake" 
+             | Site=="/Blue Lake" | Site=="/Isabelle Lake" | Site=="/Snowbank Lake" 
+             | Site=="Diamond Lake" | Site=="/Mud Lake" | Site=="?Jasper Lake" 
+             | Site=="/Upper Diamond Lake "| Site=="Forest Lake"| Site=="/Lion Lake 2"
+             | Site=="Pear Reservoir" | Site=="/Yankee Doodle " | Site=="/GL1" 
+             | Site=="Long Lake" | Site=="Red Deer Lake"| Site=="/Red Rock Lake" 
+             | Site=="/Mitchell Lake", 
+             select= Site:NDVI)
+summary(dk$Site)
+
+mean(dk$DOC_mg_L)
+range(na.omit(dk$DOC_mg_L))
+
+
+dk2 <- subset(d, Site=="/Albion" | Site=="GL4" | Site=="/Lost Lake" 
+             | Site=="Blue Lake" | Site=="Isabelle Lake" | Site=="Snowbank Lake" 
+             | Site=="/Diamond Lake" | Site=="/Mud Lake" | Site=="Jasper Lake" 
+             | Site=="Upper Diamond Lake "| Site=="/Forest Lake"| Site=="Lion Lake 2"
+             | Site=="/Pear Reservoir" | Site=="Yankee Doodle " | Site=="GL1" 
+             | Site=="/Long Lake" | Site=="/Red Deer Lake"| Site=="/Red Rock Lake" 
+             | Site=="/Mitchell Lake", 
+             select= Site:NDVI)
+summary(dk2$Site)
+range(na.omit(dk2$DOC_mg_L))
+mean(dk2$DOC_mg_L)
+
+mean(na.omit(dk$SO4_uMOL))
+range(na.omit(dk$SO4_uMOL))
+
+
+names(cp)
+dk <- subset(cp, Site=="/Albion" | Site=="/GL4" | Site=="/Lost Lake" 
+             | Site=="/Blue Lake" | Site=="/Isabelle Lake" | Site=="/Snowbank Lake" 
+             | Site=="/Diamond Lake" | Site=="/Mud Lake" | Site=="/Jasper Lake" 
+             | Site=="/Upper Diamond Lake "| Site=="/Forest Lake"| Site=="/Lion Lake 2"
+             | Site=="/Pear Reservoir" | Site=="/Yankee Doodle " | Site=="/GL1" 
+             | Site=="/Long Lake" | Site=="/Red Deer Lake" | Site=="/Red Rock Lake"| Site=="Mitchell Lake",  
+             select= Site:Sort)
+summary(dk$Site)
+
+mean(na.omit(dk$zoop_den2))
+range(na.omit(dk$zoop_den2))
+
+
+names(w)
+dk <- subset(w, Site=="/Albion" | Site=="/GL4" | Site=="/Lost Lake" 
+             | Site=="/Blue Lake" | Site=="/Isabelle Lake" | Site=="/Snowbank Lake" 
+             | Site=="/Diamond Lake" | Site=="/Mud Lake" | Site=="/Jasper Lake" 
+             | Site=="/Upper Diamond Lake "| Site=="/Forest Lake"| Site=="/Lion Lake 2"
+             | Site=="/Pear Reservoir" | Site=="/Yankee Doodle " | Site=="/GL1" 
+             | Site=="/Long Lake" | Site=="/Red Deer Lake" | Site=="Red Rock Lake"| Site=="Mitchell Lake",  
+             select= Site:NDVI)
+summary(dk$Site)
+
+mean(na.omit(dk))
+range(na.omit(dk$Chl.a))
+
+
+dt <- subset(d3, sample_depth=="sur",
+             select= Site:NDVI_QAQC)
+summary(dt$sample_depth)
+
+cor.test(dt$Elevation,  dt$NDVI_QAQC)
+?cor.test()
+
+
+range(na.omit(d$FI))
+
+
+
+
+var(na.omit(d$FI))
+
+?var
+?sd
+
+

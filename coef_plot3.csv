@@ -1,0 +1,5 @@
+response,elev_coef,st_error,pval,Sig
+B.kpar' +1,-0.305,0.07,0.0001,significant 
+C.Change in rho,-0.015,0.01,0.046,significant 
+D.DOC' +1,-0.103,0.05,0.049,significant 
+E.Secchi,0.071,0.04,0.079,marginal
